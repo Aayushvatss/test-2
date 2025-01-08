@@ -1,0 +1,77 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id       String @id @default(uuid())
+  email    String @unique
+  password String
+  role     Role
+  name     String
+}
+
+model Patient {
+  id               String @id @default(uuid())
+  name             String
+  diseases         String[]
+  allergies        String[]
+  roomNumber       String
+  bedNumber        String
+  floorNumber      String
+  age              Int
+  gender           String
+  contactInfo      String
+  emergencyContact String
+  dietCharts       DietChart[]
+}
+
+model DietChart {
+  id          String @id @default(uuid())
+  patientId   String
+  patient     Patient @relation(fields: [patientId], references: [id])
+  mealType    MealType
+  ingredients String[]
+  instructions String[]
+  date        DateTime
+  status      Status @default(PENDING)
+  assignedTo  String?
+}
+
+model PantryStaff {
+  id          String @id @default(uuid())
+  name        String
+  contactInfo String
+  location    String
+}
+
+model DeliveryPersonnel {
+  id          String @id @default(uuid())
+  name        String
+  contactInfo String
+}
+
+enum Role {
+  MANAGER
+  PANTRY
+  DELIVERY
+}
+
+enum MealType {
+  MORNING
+  EVENING
+  NIGHT
+}
+
+enum Status {
+  PENDING
+  PREPARING
+  PREPARED
+  DELIVERING
+  DELIVERED
+}
+
